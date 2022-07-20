@@ -3,7 +3,7 @@ const app = require('http').createServer(handler);
 const io = require('socket.io')(app);
 const fs = require('fs');
 
-app.listen(8000);
+app.listen(5000);
 
 function handler (req, res) {
     fs.readFile(__dirname + '/views/index.html', function( err, data) {
@@ -44,7 +44,7 @@ function joinGame(socket){
     let ball = new PlayerBall(socket);
 
     balls.push(ball);
-    ballMap[socket.id] = ball;
+    ballMap[socket.id] = ball; // 모든사람 > 게임하는 사람의 정보만 
 
     return ball;
 }
