@@ -17,24 +17,32 @@
 <body>
     <canvas id = "myCanvas" width ="1024" height = "768"></canvas>
 
-
     <script>
         var canvas = document.getElementById("myCanvas");
         var ctx = canvas.getContext("2d");
         var radius = 16
         var playerSpeed = 4
-
+        
         var rightPressed = false;
         var leftPressed = false;
         var upPressed = false;
         var downPressed = false;
+
+        var playerReady = false;
+        var playerImage = new pImage ();
+        playerImage.onload = function (){
+          playerReady = true;
+        };
+        playerImage.src = "https://media.discordapp.net/attachments/980090904394219562/996375515952857088/1.png"
+      
         function PlayerBall(id){
             this.id = id;
             this.color = "#FF00FF";
             this.x = 1024/2;
             this.y = 768/2;
         }
-        
+
+       ;
         var balls  = [];
         var ballMap = {};
         var myId;
@@ -133,6 +141,9 @@
         }
 
         function renderPlayer() {
+                if(playerReady){
+                  ctx.drawImage(playerImage, ball.x, ball.y);
+                }
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 
                 for (let i = 0; i < balls.length; i++) {
