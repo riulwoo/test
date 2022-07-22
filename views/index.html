@@ -28,17 +28,15 @@
         var upPressed = false;
         var downPressed = false;
 
-        var img = {};
-        img.player = new Image();
-        img.player.src = 'https://media.discordapp.net/attachments/980090904394219562/996375515952857088/1.png'
+
         function PlayerBall(id){
+            this.player = new Image();
+            this.player.src = 'https://media.discordapp.net/attachments/980090904394219562/996375515952857088/1.png';
             this.id = id;
             this.color = "#FF00FF";
             this.x = 1024/2;
             this.y = 768/2;
-        }
-
-       ;
+        };
         var balls  = [];
         var ballMap = {};
         var myId;
@@ -140,14 +138,15 @@
                   
                 
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
-                ctx.drawImage(img.player, 0, 0, img.player.width, img.player.height, ball.x, ball.y, width, height);
+                
                 for (let i = 0; i < balls.length; i++) {
                     let ball = balls[i];
                     
                     ctx.fillStyle = ball.color;
                     ctx.beginPath();
-                   
+                    ctx.arc(ball.x, ball.y, radius, 0, Math.PI * 2, false);
                     ctx.closePath();
+                    ctx.drawImage(ball.player, ball.x, ball.y);
                     ctx.fill();
                     
                     ctx.beginPath();
