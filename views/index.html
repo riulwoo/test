@@ -132,8 +132,7 @@
       updateState(data.id, data.x, data.y, data.direction);
   })
   
-  function sendData(direction) {
-      let curPlayer = ballMap[myId];
+  function sendData(curPlayer, direction) {
       let data = {};
       data = {
           id : curPlayer.id,
@@ -146,7 +145,7 @@
       }
   }
 
-  function renderPlayer() {    
+  function renderPlayer() {
   let direction;
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   
@@ -162,30 +161,32 @@
       ctx.closePath();
   }
 
-  let curPlayer = ballMap[myId];
-    
-  if (rightPressed){
-    curPlayer.x += playerSpeed;
-    direction = 3;
-    curPlayer.player.src = curPlayer.asset[direction];
-  }
-  if(upPressed){
-    curPlayer.y -= playerSpeed;
-    direction = 2;
-    curPlayer.player.src = curPlayer.asset[direction];
-  }
-  if (leftPressed){
-    curPlayer.x -= playerSpeed;
-    direction = 1;
-    curPlayer.player.src = curPlayer.asset[direction];
-  }
-  if(downPressed){
-    curPlayer.y += playerSpeed;
-    direction = 0;
-    curPlayer.player.src = curPlayer.asset[direction];
-  }
-  sendData(curPlayer, direction);
-    sendData();
+    let curPlayer = ballMap[myId];
+      
+    if (rightPressed){
+      direction = 3;
+      curPlayer.player.src = curPlayer.asset[direction];
+      curPlayer.x += playerSpeed;
+    sendData(curPlayer, direction);
+    }
+    if(upPressed){
+      direction = 2;
+      curPlayer.player.src = curPlayer.asset[direction];
+      curPlayer.y -= playerSpeed;
+    sendData(curPlayer, direction);
+    }
+    if (leftPressed){
+      direction = 1;
+      curPlayer.player.src = curPlayer.asset[direction];
+      curPlayer.x -= playerSpeed;
+    sendData(curPlayer, direction);
+    }
+    if(downPressed){
+      direction = 0;
+      curPlayer.player.src = curPlayer.asset[direction];
+      curPlayer.y += playerSpeed;
+    sendData(curPlayer, direction);
+    }
   }
   
   function update() {
