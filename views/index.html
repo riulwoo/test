@@ -50,7 +50,6 @@
   var balls  = [];
   var ballMap = {};
   var myId;
-  let direction;
 
   document.addEventListener("keydown", keyDownHandler,false);
   document.addEventListener("keyup", keyUpHandler,false);
@@ -147,7 +146,8 @@
       }
   }
 
-  function renderPlayer() {
+  function renderPlayer() {    
+  let direction;
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   
   for (let i = 0; i < balls.length; i++) {
@@ -192,7 +192,7 @@
     renderPlayer();
   }
   
-  setInterval(update, 100);
+  setInterval(update, 10);
 </script>
 
 </body>
