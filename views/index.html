@@ -124,6 +124,7 @@
   });
   socket.on('join_user', function(data){
       joinUser(data.id, data.color, data.x, data.y, data.nick);
+      renderPlayer();
   })
   socket.on('leave_user', function(data){
       leaveUser(data);
