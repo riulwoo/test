@@ -15,166 +15,184 @@
 
 </head>
 <body>
-    <canvas id = "myCanvas" width ="1024" height = "768"></canvas>
+<canvas id = "myCanvas" width ="1024" height = "768"></canvas>
 
-    <script>
-        var canvas = document.getElementById("myCanvas");
-        var ctx = canvas.getContext("2d");
-        var radius = 16
-        var playerSpeed = 4
-        
-        var rightPressed = false;
-        var leftPressed = false;
-        var upPressed = false;
-        var downPressed = false;
+<script>
+  var canvas = document.getElementById("myCanvas");
+  var ctx = canvas.getContext("2d");
+  var radius = 16
+  var playerSpeed = 4
+  
+  var rightPressed = false;
+  var leftPressed = false;
+  var upPressed = false;
+  var downPressed = false;
 
 
-        function PlayerBall(id){
-            this.player = new Image();
-            this.player.src = 'https://media.discordapp.net/attachments/980090904394219562/996375515952857088/1.png';
-            this.id = id;
-            this.color = "#FF00FF";
-            this.x = 1024/2;
-            this.y = 768/2;
-        };
-        var balls  = [];
-        var ballMap = {};
-        var myId;
+  function PlayerBall(id, nick){
+      
+      this.id = id;
+      if(nick == null)
+        this.nick = "player" + Math.floor(Math.random()*100);
+      else
+        this.nick = nick;
+      // 정면, 좌측, 후면, 우측
+      this.asset = ['https://cdn.discordapp.com/attachments/980090904394219562/1004271208226881606/1.png',
+                    'https://cdn.discordapp.com/attachments/980090904394219562/1004271240271376385/4.png',
+                    'https://cdn.discordapp.com/attachments/980090904394219562/1004271284735193139/4.png',
+                    'https://cdn.discordapp.com/attachments/980090904394219562/1004271430722146345/3.png'];
+      this.color = "#FF00FF";
+      this.x = 1024/2;
+      this.y = 768/2;
+      this.player = new Image();
+      this.player.src = this.asset[0];
+  };
+  var balls  = [];
+  var ballMap = {};
+  var myId;
+  let direction;
 
-        document.addEventListener("keydown", keyDownHandler,false);
-        document.addEventListener("keyup", keyUpHandler,false);
+  document.addEventListener("keydown", keyDownHandler,false);
+  document.addEventListener("keyup", keyUpHandler,false);
 
-        function keyDownHandler(e){
-            if (e.code == 'ArrowRight'){
-                rightPressed = true;
-            }
-            if (e.code == 'ArrowLeft'){
-                leftPressed = true;
-            }
-            if(e.code == "ArrowDown"){
-                downPressed = true;
-            }
-            if(e.code == "ArrowUp"){
-                upPressed = true;
-            }
-        }
+  function keyDownHandler(e){
+      if (e.code == 'ArrowRight'){
+          rightPressed = true;
+      }
+      if (e.code == 'ArrowLeft'){
+          leftPressed = true;
+      }
+      if(e.code == "ArrowDown"){
+          downPressed = true;
+      }
+      if(e.code == "ArrowUp"){
+          upPressed = true;
+      }
+  }
 
-        function keyUpHandler(e){
-            if (e.code == "ArrowRight"){
-                rightPressed = false;
-            }
-            if (e.code == "ArrowLeft"){
-                leftPressed = false;
-            }
-            if(e.code == "ArrowDown"){
-                downPressed = false;
-            }
-            if(e.code == "ArrowUp"){
-                upPressed = false;
-            }
-        }
+  function keyUpHandler(e){
+      if (e.code == "ArrowRight"){
+          rightPressed = false;
+      }
+      if (e.code == "ArrowLeft"){
+          leftPressed = false;
+      }
+      if(e.code == "ArrowDown"){
+          downPressed = false;
+      }
+      if(e.code == "ArrowUp"){
+          upPressed = false;
+      }
+  }
 
-        function joinUser(id,color,x,y){
-            let ball = new PlayerBall(id);
-            ball.color = color;
-            ball.x = x;
-            ball.y = y;
+  function joinUser(id,color,x,y,nick){
+      let ball = new PlayerBall(id, nick);
+      ball.color = color;
+      ball.x = x;
+      ball.y = y;
 
-            balls.push(ball);
-            ballMap[id] = ball;
+      balls.push(ball);
+      ballMap[id] = ball;
 
-            return ball;
-        }
+      return ball;
+  }
 
-        function leaveUser(id){
-            for(var i = 0 ; i < balls.length; i++){
-                if(balls[i].id == id){
-                    balls.splice(i,1);
-                    break;
-                }
-            }
-            delete ballMap[id];
-        }
+  function leaveUser(id){
+      for(var i = 0 ; i < balls.length; i++){
+          if(balls[i].id == id){
+              balls.splice(i,1);
+              break;
+          }
+      }
+      delete ballMap[id];
+  }
 
-        function updateState(id,x,y){
-            let ball = ballMap[id];
-            if(!ball){
-                return;
-            }
-            ball.x = x;
-            ball.y = y;
+  function updateState(id,x,y,direction){
+      let ball = ballMap[id];
+      if(!ball){
+          return;
+      }
+      ball.x = x;
+      ball.y = y;
+      ball.player.src = ball.asset[direction];
+  }
 
-        }
+  var socket = io();
 
-        var socket = io();
+  socket.on('user_id', function(data){
+      myId = data;
+  });
+  socket.on('join_user', function(data){
+      joinUser(data.id, data.color, data.x, data.y, data.nick);
+  })
+  socket.on('leave_user', function(data){
+      leaveUser(data);
+  })
+  socket.on('update_state', function(data){
+      updateState(data.id, data.x, data.y, data.direction);
+  })
+  
+  function sendData(direction) {
+      let curPlayer = ballMap[myId];
+      let data = {};
+      data = {
+          id : curPlayer.id,
+          x: curPlayer.x,
+          y: curPlayer.y,
+          direction : direction
+      };
+      if(data){
+          socket.emit("send_location", data);
+      }
+  }
 
-        socket.on('user_id', function(data){
-            myId = data;
-        });
-        socket.on('join_user', function(data){
-            joinUser(data.id, data.color, data.x, data.y);
-        })
-        socket.on('leave_user', function(data){
-            leaveUser(data);
-        })
-        socket.on('update_state', function(data){
-            updateState(data.id, data.x, data.y);
-        })
-        
-        function sendData() {
-            let curPlayer = ballMap[myId];
-            let data = {};
-            data = {
-                id : curPlayer.id,
-                x: curPlayer.x,
-                y: curPlayer.y,
-            };
-            if(data){
-                socket.emit("send_location", data);
-            }
-        }
+  function renderPlayer() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  
+  for (let i = 0; i < balls.length; i++) {
+      let ball = balls[i];
+      
+      ctx.drawImage(ball.player, ball.x, ball.y);
 
-        function renderPlayer() {
-                  
-                
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                
-                for (let i = 0; i < balls.length; i++) {
-                    let ball = balls[i];
-                    
-                    ctx.drawImage(ball.player, ball.x, ball.y);
+      ctx.beginPath();
+      ctx.fillStyle = ball.color;
+      ctx.font = '15px Arial';
+      ctx.fillText(ball.nick ,ball.x-10, ball.y-radius+10);
+      ctx.closePath();
+  }
 
-                    ctx.beginPath();
-                    ctx.fillStyle = ball.color;
-                    ctx.font = '15px Arial';
-                    ctx.fillText(`player ${i}`,ball.x-radius-7, ball.y-radius);
-                    ctx.closePath();
-                }
-
-                let curPlayer = ballMap[myId];
-                
-                if (rightPressed){
-                    curPlayer.x += playerSpeed;
-                }
-                if (leftPressed ){
-                    curPlayer.x -= playerSpeed;
-                }
-                if(upPressed ){
-                    curPlayer.y -= playerSpeed;
-                }
-                if(downPressed ){
-                    curPlayer.y += playerSpeed;
-                }
-                sendData();
-            }
-
-        function update() {
-            renderPlayer();
-        }
-        
-        setInterval(update, 10);
-
-    </script>
+  let curPlayer = ballMap[myId];
+    
+  if (rightPressed){
+    curPlayer.x += playerSpeed;
+    direction = 3;
+    curPlayer.currentImage.src = curPlayer.asset[direction];
+  }
+  if (leftPressed){
+    curPlayer.x -= playerSpeed;
+    direction = 2;
+    curPlayer.currentImage.src = curPlayer.asset[direction];
+  }
+  if(upPressed){
+    curPlayer.y -= playerSpeed;
+    direction = 1;
+    curPlayer.currentImage.src = curPlayer.asset[direction];
+  }
+  if(downPressed){
+    curPlayer.y += playerSpeed;
+    direction = 0;
+    curPlayer.currentImage.src = curPlayer.asset[direction];
+  }
+  sendData(curPlayer, direction);
+    sendData();
+  }
+  
+  function update() {
+  renderPlayer();
+  }
+  
+  setInterval(update, 10);
+</script>
 
 </body>
 </html><!-- index.html -->

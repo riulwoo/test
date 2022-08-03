@@ -93,6 +93,7 @@ io.on('connection', function(socket) {
                 id: data.id,
                 x: data.x,
                 y: data.y,
+                direction: data.direction
             })
     })
 })
