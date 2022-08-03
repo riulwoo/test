@@ -169,14 +169,14 @@
     direction = 3;
     curPlayer.player.src = curPlayer.asset[direction];
   }
-  if (leftPressed){
-    curPlayer.x -= playerSpeed;
-    direction = 1;
-    curPlayer.player.src = curPlayer.asset[direction];
-  }
   if(upPressed){
     curPlayer.y -= playerSpeed;
     direction = 2;
+    curPlayer.player.src = curPlayer.asset[direction];
+  }
+  if (leftPressed){
+    curPlayer.x -= playerSpeed;
+    direction = 1;
     curPlayer.player.src = curPlayer.asset[direction];
   }
   if(downPressed){
@@ -189,10 +189,10 @@
   }
   
   function update() {
-  renderPlayer();
+    renderPlayer();
   }
   
-  setInterval(update, 10);
+  setInterval(update, 100);
 </script>
 
 </body>
