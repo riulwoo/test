@@ -166,22 +166,22 @@
   if (rightPressed){
     curPlayer.x += playerSpeed;
     direction = 3;
-    curPlayer.currentImage.src = curPlayer.asset[direction];
+    curPlayer.player.src = curPlayer.asset[direction];
   }
   if (leftPressed){
     curPlayer.x -= playerSpeed;
     direction = 2;
-    curPlayer.currentImage.src = curPlayer.asset[direction];
+    curPlayer.player.src = curPlayer.asset[direction];
   }
   if(upPressed){
     curPlayer.y -= playerSpeed;
     direction = 1;
-    curPlayer.currentImage.src = curPlayer.asset[direction];
+    curPlayer.player.src = curPlayer.asset[direction];
   }
   if(downPressed){
     curPlayer.y += playerSpeed;
     direction = 0;
-    curPlayer.currentImage.src = curPlayer.asset[direction];
+    curPlayer.player.src = curPlayer.asset[direction];
   }
   sendData(curPlayer, direction);
     sendData();
